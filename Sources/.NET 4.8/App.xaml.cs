@@ -9,7 +9,13 @@ namespace LinkSimplifier
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
             base.OnStartup(e);
-            var mainWindow = new MainWindow();
+
+            var mainViewModel = new MainViewModel();
+            var mainWindow = new MainWindow
+            {
+                DataContext = mainViewModel
+            };
+
             mainWindow.Show();
         }
 

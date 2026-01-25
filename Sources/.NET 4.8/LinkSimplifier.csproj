@@ -57,25 +57,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AllClass\Json.cs" />
-    <Compile Include="AllClass\Lanzou.cs" />
-    <Compile Include="Utils\DebugLogger.cs" />
-    <Compile Include="Utils\FileSizeUtils.cs" />
-    <Compile Include="Utils\HttpUtils.cs" />
-    <Page Include="Interface\MainWindow.xaml">
+    <Compile Include="Core\ALL.cs" />
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="AllClass\Downloader.cs" />
-    <Compile Include="AllClass\UrlProcessor.cs" />
-    <Compile Include="AllClass\Globals.cs" />
-    <Compile Include="AllClass\HttpClientWrapper.cs" />
-    <Compile Include="AllClass\QQMail.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interface\MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>

@@ -4,10 +4,10 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         Title="LinkSimplifier"
         Height="550" Width="900" MinHeight="550" MinWidth="900"
-        WindowStartupLocation="CenterScreen" Background="#FAFAFA"
-        ContentRendered="Window_ContentRendered">
+        WindowStartupLocation="CenterScreen" Background="#FAFAFA">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <SolidColorBrush x:Key="AccentColor" Color="#0078D4"/>
         <SolidColorBrush x:Key="CardBackground" Color="White"/>
         <SolidColorBrush x:Key="CardBorder" Color="#E8E8E8"/>
@@ -124,42 +124,44 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" Style="{StaticResource RoundedBorder}">
-                    <TextBox Name="Url_TextBox" Height="{StaticResource ControlHeight}"
+                    <TextBox Text="{Binding InputUrl, UpdateSourceTrigger=PropertyChanged}"
+                         Height="{StaticResource ControlHeight}"
                          Style="{StaticResource PlaceholderTextBox}"/>
                 </Border>
 
-                <Button Name="Parser_Button" Grid.Column="1" Content="开始解析"
-                    MinWidth="{StaticResource ButtonWidth}" Style="{StaticResource ActionButton}"
-                    Click="Parser_Button_Click"/>
+                <Button Grid.Column="1" Content="开始解析"
+                    Command="{Binding ParseCommand}"
+                    MinWidth="{StaticResource ButtonWidth}" Style="{StaticResource ActionButton}"/>
 
-                <Button Name="Download_Button" Grid.Column="2" Content="下载文件"
-                    MinWidth="{StaticResource ButtonWidth}" Style="{StaticResource ActionButton}"
-                    Click="Download_Button_Click"/>
+                <Button Grid.Column="2" Content="{Binding DownloadButtonText}"
+                    Command="{Binding DownloadCommand}"
+                    MinWidth="{StaticResource ButtonWidth}" Style="{StaticResource ActionButton}"/>
 
-                <Button Name="Clear_Button" Grid.Column="3" Content="清空"
-                    MinWidth="{StaticResource SmallButtonWidth}" Style="{StaticResource ActionButton}"
-                    Click="Clear_Button_Click"/>
+                <Button Grid.Column="3" Content="清空"
+                    Command="{Binding ClearCommand}"
+                    MinWidth="{StaticResource SmallButtonWidth}" Style="{StaticResource ActionButton}"/>
             </Grid>
         </Border>
 
-        <Border x:Name="ResultBorder" Grid.Row="1" Style="{StaticResource RoundedBorder}" Padding="16" Margin="0,0,0,0">
-            <TextBox Name="Result_TextBox" Style="{StaticResource InputBox}"
+        <Border Grid.Row="1" Style="{StaticResource RoundedBorder}" Padding="16" Margin="0,0,0,0">
+            <TextBox Text="{Binding ResultText, Mode=OneWay}"
+                    Style="{StaticResource InputBox}"
                     TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
                     AcceptsReturn="True" IsReadOnly="True" FontFamily="Segoe UI"
                     VerticalContentAlignment="Top" HorizontalContentAlignment="Left"/>
         </Border>
 
         <Border Grid.Row="2" Style="{StaticResource RoundedBorder}" Padding="16"
-                Visibility="Collapsed" x:Name="DownloadPanel">
+                Visibility="{Binding ShowDownloadPanel, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <ProgressBar Grid.Row="0" Name="ProgressBar"
+                <ProgressBar Grid.Row="0" Value="{Binding ProgressValue}"
                             Style="{StaticResource ProgressBarStyle}"
-                            Minimum="0" Maximum="100" Value="0"/>
+                            Minimum="0" Maximum="100"/>
 
                 <Grid Grid.Row="1" Margin="0,8,0,0">
                     <Grid.ColumnDefinitions>
@@ -168,12 +170,15 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0" Style="{StaticResource ProgressText}">
-                        <Run Text="已下载: "/><Run x:Name="DownloadedSizeRun" Text="0 B"/>
-                        <Run Text=" / "/><Run Text="总大小: "/><Run x:Name="TotalSizeRun" Text="0 B"/>
+                        <Run Text="已下载: "/>
+                        <Run Text="{Binding DownloadedSize}"/>
+                        <Run Text=" / 总大小: "/>
+                        <Run Text="{Binding TotalSize}"/>
                     </TextBlock>
 
                     <TextBlock Grid.Column="1" Style="{StaticResource ProgressText}">
-                        <Run Text="{Binding Value, ElementName=ProgressBar, StringFormat={}{0:0.##}}"/><Run Text=" %"/>
+                        <Run Text="{Binding ProgressValue, StringFormat={}{0:0.##}}"/>
+                        <Run Text=" %"/>
                     </TextBlock>
                 </Grid>
             </Grid>
