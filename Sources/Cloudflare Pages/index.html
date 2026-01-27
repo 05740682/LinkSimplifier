@@ -9,46 +9,40 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            font-family: 'Segoe UI','Microsoft YaHei',sans-serif
         }
 
         body {
             background-color: #0078D4;
-            background-image:
-                linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
-                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
+            background-image: linear-gradient(45deg,rgba(255,255,255,.05)25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.05)25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.05)75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.05)75%);
             background-size: 40px 40px;
-            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            background-position: 0 0,0 20px,20px -20px,-20px 0;
             color: #333;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
-        /* Windows 桌面壁纸效果 */
         .desktop-wallpaper {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0078D4 0%, #1E4FA0 50%, #002050 100%);
-            z-index: -2;
+            background: linear-gradient(135deg,#0078D4 0%,#1E4FA0 50%,#002050 100%);
+            z-index: -2
         }
 
-        /* 任务栏 */
         .taskbar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 48px;
-            background-color: rgba(32, 32, 32, 0.9);
+            background-color: rgba(32,32,32,.9);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: flex;
@@ -56,52 +50,50 @@
             justify-content: space-between;
             padding: 0 10px;
             z-index: 1000;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            transition: opacity 0.3s ease;
+            border-top: 1px solid rgba(255,255,255,.1);
+            transition: opacity .3s ease
         }
 
-        .taskbar.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+            .taskbar.hidden {
+                opacity: 0;
+                pointer-events: none
+            }
 
         .windows-logo {
             width: 24px;
-            height: 24px;
+            height: 24px
         }
 
         .time-display {
-            color: white;
+            color: #fff;
             font-size: 12px;
-            padding: 8px 12px;
+            padding: 8px 12px
         }
 
-        /* Windows 11 风格窗口容器 */
         .window-container {
             width: 900px;
             height: 550px;
-            background-color: #FAFAFA;
+            background-color: #fafafa;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,.15);
             display: flex;
             flex-direction: column;
-            border: 1px solid #E1E1E1;
+            border: 1px solid #e1e1e1;
             position: absolute;
-            z-index: 1;
+            z-index: 1
         }
 
-        /* Windows 11 标题栏 */
         .title-bar {
             height: 32px;
-            background-color: #F3F3F3;
+            background-color: #f3f3f3;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 8px;
             user-select: none;
-            border-bottom: 1px solid #E1E1E1;
-            -webkit-app-region: drag;
+            border-bottom: 1px solid #e1e1e1;
+            -webkit-app-region: drag
         }
 
         .title-bar-drag {
@@ -110,19 +102,19 @@
             height: 100%;
             display: flex;
             align-items: center;
-            padding-left: 12px;
+            padding-left: 12px
         }
 
         .window-title {
             font-size: 12px;
             font-weight: 500;
-            color: #333;
+            color: #333
         }
 
         .window-controls {
             display: flex;
             gap: 2px;
-            -webkit-app-region: no-drag;
+            -webkit-app-region: no-drag
         }
 
         .window-btn {
@@ -136,64 +128,61 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color .2s
         }
 
-        .window-btn:hover {
-            background-color: rgba(0, 0, 0, 0.08);
-        }
+            .window-btn:hover {
+                background-color: rgba(0,0,0,.08)
+            }
 
-        .window-btn.close:hover {
-            background-color: #E81123;
-            color: white;
-        }
+            .window-btn.close:hover {
+                background-color: #e81123;
+                color: #fff
+            }
 
-        .window-btn.disabled {
-            opacity: 0.3;
-            cursor: default;
-        }
+            .window-btn.disabled {
+                opacity: .3;
+                cursor: default
+            }
 
-        .window-btn.disabled:hover {
-            background-color: transparent;
-        }
+                .window-btn.disabled:hover {
+                    background-color: transparent
+                }
 
-        .window-btn svg {
-            width: 10px;
-            height: 10px;
-        }
+            .window-btn svg {
+                width: 10px;
+                height: 10px
+            }
 
-        /* 窗口内容区域 */
         .window-content {
             flex: 1;
             padding: 16px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden
         }
 
-        /* 卡片样式 */
         .card {
-            background-color: white;
-            border: 1px solid #E8E8E8;
+            background-color: #fff;
+            border: 1px solid #e8e8e8;
             border-radius: 6px;
             padding: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 16px
         }
 
-        /* 输入框区域 */
         .input-section {
             display: flex;
             gap: 8px;
-            align-items: stretch;
+            align-items: stretch
         }
 
         .input-container {
             flex: 1;
-            border: 1px solid #E8E8E8;
+            border: 1px solid #e8e8e8;
             border-radius: 6px;
-            background-color: white;
+            background-color: #fff;
             overflow: hidden;
-            position: relative;
+            position: relative
         }
 
         .input-box {
@@ -203,7 +192,7 @@
             font-size: 15px;
             border: none;
             outline: none;
-            background-color: transparent;
+            background-color: transparent
         }
 
         .placeholder {
@@ -212,20 +201,18 @@
             left: 0;
             padding: 12px;
             font-size: 15px;
-            color: #AAAAAA;
+            color: #aaa;
             font-style: italic;
             pointer-events: none;
             display: flex;
             align-items: center;
-            height: 44px;
+            height: 44px
         }
 
-        .input-box:focus + .placeholder,
-        .input-box:not(:placeholder-shown) + .placeholder {
-            display: none;
+        .input-box:focus + .placeholder, .input-box:not(:placeholder-shown) + .placeholder {
+            display: none
         }
 
-        /* 按钮样式 */
         .btn {
             height: 44px;
             font-size: 15px;
@@ -234,42 +221,41 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color .2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 80px;
+            min-width: 80px
         }
 
         .btn-primary {
             background-color: #0078D4;
-            color: white;
-            min-width: 100px;
+            color: #fff;
+            min-width: 100px
         }
 
-        .btn-primary:hover {
-            background-color: #006CBE;
-        }
+            .btn-primary:hover {
+                background-color: #006CBE
+            }
 
-        .btn-primary:active {
-            background-color: #005A9E;
-        }
+            .btn-primary:active {
+                background-color: #005A9E
+            }
 
-        .btn-primary:disabled {
-            background-color: #CCCCCC;
-            color: #888888;
-            cursor: not-allowed;
-        }
+            .btn-primary:disabled {
+                background-color: #ccc;
+                color: #888;
+                cursor: not-allowed
+            }
 
         .btn-small {
-            min-width: 80px;
+            min-width: 80px
         }
 
-        /* 结果区域 */
         .result-section {
             flex: 1;
             display: flex;
-            flex-direction: column;
+            flex-direction: column
         }
 
         .result-box {
@@ -280,57 +266,104 @@
             outline: none;
             resize: none;
             background-color: transparent;
-            font-family: 'Segoe UI', 'Microsoft YaHei', monospace;
-            line-height: 1.5;
+            font-family: 'Segoe UI','Microsoft YaHei',monospace;
+            line-height: 1.5
         }
 
-        .result-box:focus {
-            outline: none;
+            .result-box:focus {
+                outline: none
+            }
+
+        .desktop-icon {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            width: 80px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .2s ease;
+            z-index: 1001;
+            text-align: center;
+            background-color: transparent
         }
 
-        /* 响应式调整 */
-        @media (max-width: 920px) {
+            .desktop-icon:hover {
+                background-color: rgba(255,255,255,.1);
+                border-radius: 4px
+            }
+
+            .desktop-icon:active {
+                transform: scale(.95)
+            }
+
+        .desktop-icon-img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+            background-color: transparent
+        }
+
+        .desktop-icon-text {
+            color: #fff;
+            font-size: 12px;
+            text-shadow: 0 1px 3px rgba(0,0,0,.5);
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .desktop-icon svg {
+            background-color: transparent
+        }
+
+            .desktop-icon svg path {
+                fill: #000 !important
+            }
+
+        @media (max-width:920px) {
             .window-container {
                 width: 95vw;
                 height: 95vh;
-                margin: 10px;
+                margin: 10px
             }
         }
     </style>
 </head>
 <body>
-    <!-- 桌面壁纸 -->
     <div class="desktop-wallpaper"></div>
 
-    <!-- Windows 11 风格窗口 -->
+    <div class="desktop-icon" id="githubIcon" title="项目仓库">
+        <div class="desktop-icon-img">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+        </div>
+        <div class="desktop-icon-text">项目仓库</div>
+    </div>
+
     <div class="window-container" id="windowContainer">
-        <!-- Windows 11 标题栏 -->
         <div class="title-bar">
             <div class="title-bar-drag">
                 <div class="window-title">LinkSimplifier</div>
             </div>
             <div class="window-controls">
                 <button class="window-btn minimize disabled" id="minimizeBtn" title="最小化" disabled>
-                    <svg viewBox="0 0 10 1">
-                        <rect x="0" y="0" width="10" height="1" fill="currentColor"/>
-                    </svg>
+                    <svg viewBox="0 0 10 1"><rect x="0" y="0" width="10" height="1" fill="currentColor" /></svg>
                 </button>
                 <button class="window-btn maximize" id="maximizeBtn" title="最大化">
-                    <svg viewBox="0 0 10 10">
-                        <rect x="0" y="0" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1"/>
-                    </svg>
+                    <svg viewBox="0 0 10 10"><rect x="0" y="0" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1" /></svg>
                 </button>
                 <button class="window-btn close" id="closeBtn" title="关闭">
-                    <svg viewBox="0 0 10 10">
-                        <path d="M1,1 L9,9 M9,1 L1,9" stroke="currentColor" stroke-width="1" fill="none"/>
-                    </svg>
+                    <svg viewBox="0 0 10 10"><path d="M1,1 L9,9 M9,1 L1,9" stroke="currentColor" stroke-width="1" fill="none" /></svg>
                 </button>
             </div>
         </div>
-
-        <!-- 窗口内容 -->
         <div class="window-content">
-            <!-- 输入区域 -->
             <div class="card">
                 <div class="input-section">
                     <div class="input-container">
@@ -341,238 +374,17 @@
                     <button class="btn btn-primary btn-small" id="clearBtn">清空</button>
                 </div>
             </div>
-
-            <!-- 结果区域 -->
             <div class="card result-section">
                 <textarea class="result-box" id="resultText" readonly></textarea>
             </div>
         </div>
     </div>
-
-    <!-- 任务栏 -->
     <div class="taskbar" id="taskbar">
-        <svg class="windows-logo" viewBox="0 0 4875 4875">
-            <path fill="#0078d4" d="M0 0h2311v2310H0zm2564 0h2311v2310H2564zM0 2564h2311v2311H0zm2564 0h2311v2311H2564"/>
-        </svg>
+        <svg class="windows-logo" viewBox="0 0 4875 4875"><path fill="#0078d4" d="M0 0h2311v2310H0zm2564 0h2311v2310H2564zM0 2564h2311v2311H0zm2564 0h2311v2311H2564" /></svg>
         <div class="time-display" id="timeDisplay">00:00</div>
     </div>
-
     <script>
-        // DOM元素
-        const urlInput = document.getElementById('urlInput');
-        const placeholder = document.getElementById('placeholder');
-        const parseBtn = document.getElementById('parseBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const resultText = document.getElementById('resultText');
-        const windowContainer = document.getElementById('windowContainer');
-        const minimizeBtn = document.getElementById('minimizeBtn');
-        const maximizeBtn = document.getElementById('maximizeBtn');
-        const closeBtn = document.getElementById('closeBtn');
-        const timeDisplay = document.getElementById('timeDisplay');
-        const taskbar = document.getElementById('taskbar');
-
-        // 窗口状态
-        let isMaximized = false;
-        let originalPosition = { x: 0, y: 0 };
-        let originalSize = { width: 900, height: 550 };
-        let isDragging = false;
-        let dragStartX, dragStartY, containerStartX, containerStartY;
-
-        // 更新时间显示
-        function updateTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            timeDisplay.textContent = `${hours}:${minutes}`;
-        }
-
-        // 初始化时间显示
-        updateTime();
-        setInterval(updateTime, 1000);
-
-        // 解析链接
-        function parseLink() {
-            const url = urlInput.value.trim();
-
-            if (!url) {
-                resultText.value = "错误：请输入内容";
-                return;
-            }
-
-            // 直接在结果中显示输入的内容
-            resultText.value = url;
-        }
-
-        // 清空输入和结果
-        function clearAll() {
-            urlInput.value = '';
-            resultText.value = '';
-            urlInput.focus();
-        }
-
-        // 窗口控制功能
-        function maximizeWindow() {
-            if (!isMaximized) {
-                // 保存原始位置和大小
-                originalPosition.x = windowContainer.offsetLeft;
-                originalPosition.y = windowContainer.offsetTop;
-                originalSize.width = windowContainer.offsetWidth;
-                originalSize.height = windowContainer.offsetHeight;
-
-                // 隐藏任务栏
-                taskbar.classList.add('hidden');
-
-                // 全屏最大化
-                windowContainer.style.width = '100vw';
-                windowContainer.style.height = '100vh';
-                windowContainer.style.borderRadius = '0';
-                windowContainer.style.border = 'none';
-                windowContainer.style.boxShadow = 'none';
-                windowContainer.style.top = '0';
-                windowContainer.style.left = '0';
-                windowContainer.style.position = 'fixed';
-
-                isMaximized = true;
-            } else {
-                // 显示任务栏
-                taskbar.classList.remove('hidden');
-
-                // 计算居中位置
-                const windowWidth = originalSize.width;
-                const windowHeight = originalSize.height;
-                const centerX = (window.innerWidth - windowWidth) / 2;
-                const centerY = (window.innerHeight - windowHeight) / 2;
-
-                // 恢复原始窗口位置和大小
-                windowContainer.style.width = windowWidth + 'px';
-                windowContainer.style.height = windowHeight + 'px';
-                windowContainer.style.borderRadius = '8px';
-                windowContainer.style.border = '1px solid #E1E1E1';
-                windowContainer.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15)';
-                windowContainer.style.top = centerY + 'px';
-                windowContainer.style.left = centerX + 'px';
-                windowContainer.style.position = 'fixed';
-
-                // 更新原始位置记录为居中位置
-                originalPosition.x = centerX;
-                originalPosition.y = centerY;
-
-                isMaximized = false;
-            }
-        }
-
-        function closeWindow() {
-            // 关闭当前标签页
-            window.close();
-
-            // 如果因为浏览器安全限制无法关闭，显示提示信息
-            setTimeout(() => {
-                // 如果窗口仍然打开，显示提示
-                alert('由于浏览器安全限制，无法直接关闭标签页。\n\n请手动关闭此标签页。');
-            }, 100);
-        }
-
-        // 窗口拖拽功能 - 最初版本的实现
-        function startDrag(e) {
-            if (isMaximized) return;
-
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-
-            // 获取当前位置
-            const rect = windowContainer.getBoundingClientRect();
-            containerStartX = rect.left;
-            containerStartY = rect.top;
-
-            // 将窗口设为fixed定位以便拖拽
-            windowContainer.style.position = 'fixed';
-            windowContainer.style.left = containerStartX + 'px';
-            windowContainer.style.top = containerStartY + 'px';
-
-            document.addEventListener('mousemove', doDrag);
-            document.addEventListener('mouseup', stopDrag);
-        }
-
-        function doDrag(e) {
-            if (!isDragging) return;
-
-            const deltaX = e.clientX - dragStartX;
-            const deltaY = e.clientY - dragStartY;
-
-            windowContainer.style.left = (containerStartX + deltaX) + 'px';
-            windowContainer.style.top = (containerStartY + deltaY) + 'px';
-        }
-
-        function stopDrag() {
-            if (!isDragging) return;
-
-            isDragging = false;
-
-            // 更新原始位置记录
-            const rect = windowContainer.getBoundingClientRect();
-            originalPosition.x = rect.left;
-            originalPosition.y = rect.top;
-
-            // 拖拽结束后保持fixed定位，便于下次拖拽
-            document.removeEventListener('mousemove', doDrag);
-            document.removeEventListener('mouseup', stopDrag);
-        }
-
-        // 初始居中窗口
-        function centerWindow() {
-            if (!isMaximized) {
-                const windowWidth = windowContainer.offsetWidth;
-                const windowHeight = windowContainer.offsetHeight;
-                const centerX = (window.innerWidth - windowWidth) / 2;
-                const centerY = (window.innerHeight - windowHeight) / 2;
-
-                windowContainer.style.position = 'fixed';
-                windowContainer.style.left = centerX + 'px';
-                windowContainer.style.top = centerY + 'px';
-
-                // 更新原始位置记录
-                originalPosition.x = centerX;
-                originalPosition.y = centerY;
-            }
-        }
-
-        // 初始居中窗口
-        window.addEventListener('load', centerWindow);
-
-        // 事件监听
-        parseBtn.addEventListener('click', parseLink);
-        clearBtn.addEventListener('click', clearAll);
-
-        // 按Enter键也可以解析
-        urlInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                parseLink();
-            }
-        });
-
-        // 输入框焦点效果
-        urlInput.addEventListener('focus', function() {
-            this.parentElement.style.borderColor = '#0078D4';
-        });
-
-        urlInput.addEventListener('blur', function() {
-            this.parentElement.style.borderColor = '#E8E8E8';
-        });
-
-        // 窗口控制按钮事件
-        maximizeBtn.addEventListener('click', maximizeWindow);
-        closeBtn.addEventListener('click', closeWindow);
-
-        // 最小化按钮禁用
-        minimizeBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // 标题栏拖拽
-        const titleBarDrag = document.querySelector('.title-bar-drag');
-        titleBarDrag.addEventListener('mousedown', startDrag);
+        const urlInput = document.getElementById('urlInput'), placeholder = document.getElementById('placeholder'), parseBtn = document.getElementById('parseBtn'), clearBtn = document.getElementById('clearBtn'), resultText = document.getElementById('resultText'), windowContainer = document.getElementById('windowContainer'), minimizeBtn = document.getElementById('minimizeBtn'), maximizeBtn = document.getElementById('maximizeBtn'), closeBtn = document.getElementById('closeBtn'), timeDisplay = document.getElementById('timeDisplay'), taskbar = document.getElementById('taskbar'), githubIcon = document.getElementById('githubIcon'); let isMaximized = !1, originalPosition = { x: 0, y: 0 }, originalSize = { width: 900, height: 550 }, isDragging = !1, dragStartX, dragStartY, containerStartX, containerStartY; function updateTime() { const e = new Date, o = e.getHours().toString().padStart(2, "0"), t = e.getMinutes().toString().padStart(2, "0"); timeDisplay.textContent = `${o}:${t}` } function parseLink() { const e = urlInput.value.trim(); resultText.value = e || "错误：请输入内容" } function clearAll() { urlInput.value = "", resultText.value = "", urlInput.focus() } function maximizeWindow() { if (!isMaximized) { originalPosition.x = windowContainer.offsetLeft, originalPosition.y = windowContainer.offsetTop, originalSize.width = windowContainer.offsetWidth, originalSize.height = windowContainer.offsetHeight, taskbar.classList.add("hidden"), windowContainer.style.width = "100vw", windowContainer.style.height = "100vh", windowContainer.style.borderRadius = "0", windowContainer.style.border = "none", windowContainer.style.boxShadow = "none", windowContainer.style.top = "0", windowContainer.style.left = "0", windowContainer.style.position = "fixed", isMaximized = !0 } else { taskbar.classList.remove("hidden"); const e = originalSize.width, o = originalSize.height, t = (window.innerWidth - e) / 2, n = (window.innerHeight - o) / 2; windowContainer.style.width = e + "px", windowContainer.style.height = o + "px", windowContainer.style.borderRadius = "8px", windowContainer.style.border = "1px solid #E1E1E1", windowContainer.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.15)", windowContainer.style.top = n + "px", windowContainer.style.left = t + "px", windowContainer.style.position = "fixed", originalPosition.x = t, originalPosition.y = n, isMaximized = !1 } } function closeWindow() { window.close(), setTimeout(() => { alert("由于浏览器安全限制，无法直接关闭标签页。\n\n请手动关闭此标签页。") }, 100) } function startDrag(e) { if (!isMaximized) { isDragging = !0, dragStartX = e.clientX, dragStartY = e.clientY; const o = windowContainer.getBoundingClientRect(); containerStartX = o.left, containerStartY = o.top, windowContainer.style.position = "fixed", windowContainer.style.left = containerStartX + "px", windowContainer.style.top = containerStartY + "px", document.addEventListener("mousemove", doDrag), document.addEventListener("mouseup", stopDrag) } } function doDrag(e) { if (isDragging) { const o = e.clientX - dragStartX, t = e.clientY - dragStartY; windowContainer.style.left = containerStartX + o + "px", windowContainer.style.top = containerStartY + t + "px" } } function stopDrag() { isDragging && (isDragging = !1, document.removeEventListener("mousemove", doDrag), document.removeEventListener("mouseup", stopDrag)) } function centerWindow() { if (!isMaximized) { const e = windowContainer.offsetWidth, o = windowContainer.offsetHeight, t = (window.innerWidth - e) / 2, n = (window.innerHeight - o) / 2; windowContainer.style.position = "fixed", windowContainer.style.left = t + "px", windowContainer.style.top = n + "px", originalPosition.x = t, originalPosition.y = n } } window.addEventListener("load", centerWindow), updateTime(), setInterval(updateTime, 1e3), parseBtn.addEventListener("click", parseLink), clearBtn.addEventListener("click", clearAll), urlInput.addEventListener("keypress", function (e) { "Enter" === e.key && parseLink() }), urlInput.addEventListener("focus", function () { this.parentElement.style.borderColor = "#0078D4" }), urlInput.addEventListener("blur", function () { this.parentElement.style.borderColor = "#E8E8E8" }), maximizeBtn.addEventListener("click", maximizeWindow), closeBtn.addEventListener("click", closeWindow), minimizeBtn.addEventListener("click", function (e) { e.preventDefault(), !1 }), document.querySelector(".title-bar-drag").addEventListener("mousedown", startDrag), githubIcon.addEventListener("click", function () { window.open("https://github.com/05740682/LinkSimplifier", "_blank") }), githubIcon.addEventListener("dblclick", function () { window.open("https://github.com/05740682/LinkSimplifier", "_blank") });
     </script>
 </body>
 </html>
