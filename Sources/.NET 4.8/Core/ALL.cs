@@ -7,6 +7,7 @@ using System.Management;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -52,7 +53,7 @@ namespace LinkSimplifier
                 Write($"GPU         {gpu}");
                 Write($"RAM         {ram}");
                 Write($"OS          {os}");
-                Write($".NET        {Environment.Version}");
+                Write(RuntimeInformation.FrameworkDescription);
                 Write(new string('-', 60));
             }
             catch { }
