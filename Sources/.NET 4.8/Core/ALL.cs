@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -17,9 +18,86 @@ namespace LinkSimplifier
 {
     internal static class DebugLogger
     {
-        internal static async Task WriteLogAsync(string message)
+        private static readonly string[] L = { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
+
+        static DebugLogger()
         {
-            await Console.Out.WriteLineAsync($"[Debug][{DateTime.Now:HH:mm:ss.fff}] {message}");
+            try
+            {
+                var path = Path.Combine(Globals.Paths[1], "debug.log");
+                var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                var sw = new StreamWriter(fs, Encoding.UTF8) { AutoFlush = true };
+
+                Trace.Listeners.Clear();
+                Trace.Listeners.Add(new TextWriterTraceListener(sw));
+
+                Task.Run(() => LogHardware());
+                Write("Log system initialized.");
+            }
+            catch { }
+        }
+
+        private static void LogHardware()
+        {
+            try
+            {
+                string cpu = Get("Win32_Processor", "Name");
+                string gpu = GetGpu();
+                string ramRaw = Get("Win32_ComputerSystem", "TotalPhysicalMemory");
+                string ram = ulong.TryParse(ramRaw, out ulong b) ? ((b + 536870912) >> 30) + " GB" : "N/A";
+                string os = $"{Get("Win32_OperatingSystem", "Caption")} ({Get("Win32_OperatingSystem", "Version")}) {(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")}";
+
+                Write(new string('-', 60));
+                Write($"CPU         {cpu?.Trim()}");
+                Write($"GPU         {gpu}");
+                Write($"RAM         {ram}");
+                Write($"OS          {os}");
+                Write($".NET        {Environment.Version}");
+                Write(new string('-', 60));
+            }
+            catch { }
+        }
+
+        static string Get(string table, string property)
+        {
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher($"SELECT {property} FROM {table}"))
+                using (var collection = searcher.Get())
+                {
+                    foreach (var obj in collection)
+                    {
+                        var val = obj[property]?.ToString();
+                        if (!string.IsNullOrEmpty(val)) return val;
+                    }
+                }
+            }
+            catch { }
+            return "Unknown";
+        }
+
+        static string GetGpu()
+        {
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher("SELECT Name FROM Win32_VideoController"))
+                using (var collection = searcher.Get())
+                {
+                    var names = collection.Cast<ManagementBaseObject>()
+                                          .Select(x => x["Name"]?.ToString())
+                                          .Where(s => !string.IsNullOrEmpty(s));
+                    return names.Any() ? string.Join(" / ", names) : "Unknown";
+                }
+            }
+            catch { return "Unknown"; }
+        }
+
+        internal static void Write(string msg, int i = 1)
+        {
+            int idx = (i < 0 || i >= L.Length) ? 1 : i;
+            string prefix = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}][{L[idx]}] ";
+            string formattedMsg = msg.Replace("\n", "\n" + prefix);
+            Trace.WriteLine(prefix + formattedMsg);
         }
     }
 
@@ -271,16 +349,16 @@ namespace LinkSimplifier
 
         private static async Task ProcessAcwScV2Challenge(Uri domain, string url)
         {
-            await DebugLogger.WriteLogAsync($"开始处理acw_sc__v2挑战: {url}");
+            DebugLogger.Write($"开始处理acw_sc__v2挑战");
 
             var html = await Downloader.DownloadStringAsync(url);
 
             var _m = Globals.AcwScV2ArgRegex.Match(html);
             if (_m.Success)
             {
-                await DebugLogger.WriteLogAsync($"找到acw_sc__v2参数: {_m.Groups[1].Value}");
+                DebugLogger.Write($"找到acw_sc__v2参数: {_m.Groups[1].Value}");
                 var cookieValue = CalculateAcwScV2(_m.Groups[1].Value);
-                await DebugLogger.WriteLogAsync($"计算得到cookie值: {cookieValue}");
+                DebugLogger.Write($"计算得到cookie值: {cookieValue}");
                 HttpClientWrapper.CookieContainer.Add(domain, new Cookie("acw_sc__v2", cookieValue));
             }
         }
@@ -288,37 +366,48 @@ namespace LinkSimplifier
         /// <summary>
         /// 从HTML提取AJAX数据（返回URL和表单数据）
         /// </summary>
-        private static async Task<(string PostUrl, Dictionary<string, string> FormData)> ExtractAjaxDataAsync(string cleanHtml, string domain, string password = null)
+        private static (string PostUrl, Dictionary<string, string> FormData) ExtractAjaxData(string cleanHtml, string domain, string password = null)
         {
             var vars = new Dictionary<string, string>();
             Globals.JavaScriptVarRegex.Matches(cleanHtml).Cast<Match>().ToList().ForEach(m => vars[m.Groups[1].Value] = m.Groups[2].Success ? m.Groups[2].Value.Trim().Trim('\'') : "");
             Globals.JavaScriptAssignRegex.Matches(cleanHtml).Cast<Match>().Where(m => vars.ContainsKey(m.Groups[1].Value)).ToList().ForEach(m => vars[m.Groups[1].Value] = m.Groups[2].Value.Trim().Trim('\''));
             vars["pwd"] = password ?? "";
 
-            await DebugLogger.WriteLogAsync($"提取到变量: {vars.Count} 个");
+            DebugLogger.Write($"提取到变量: {vars.Count} 个");
 
-            var ajaxData = Regex.Replace(Globals.JavaScriptAjaxDataRegex.Match(cleanHtml).Groups[1].Value, @"\s+", " ").Trim();
-            await DebugLogger.WriteLogAsync($"原始AJAX数据: {ajaxData}");
+            var ajaxMatch = Globals.JavaScriptAjaxDataRegex.Match(cleanHtml);
+            var ajaxData = Regex.Replace(ajaxMatch.Groups[1].Value, @"\s+", " ").Trim();
+            DebugLogger.Write($"原始AJAX数据: {ajaxData}");
 
-            var formData = ajaxData.Split(',').Select(p => p.Split(':')).Where(parts => parts.Length == 2).ToDictionary(parts => parts[0].Trim().Trim('\'', '"'), parts => parts[1].Trim().Trim('\'', '"'));
-            await DebugLogger.WriteLogAsync($"构造表单数据: {formData.Count} 个字段");
+            var formData = ajaxData.Split(',')
+                .Select(p => p.Split(':'))
+                .Where(parts => parts.Length == 2)
+                .ToDictionary(parts => parts[0].Trim().Trim('\'', '"'), parts => parts[1].Trim().Trim('\'', '"'));
 
             foreach (var key in formData.Keys.ToList())
-                if (vars.TryGetValue(formData[key], out var newValue))
-                    (formData[key], _) = (newValue, DebugLogger.WriteLogAsync($"{key}: 替换 {formData[key]} -> {newValue}"));
+            {
+                string oldVal = formData[key];
+                if (vars.TryGetValue(oldVal, out var newVal))
+                {
+                    bool isSensitive = string.Equals(oldVal, "pwd", StringComparison.OrdinalIgnoreCase);
+                    DebugLogger.Write($"{key}: 替换 {oldVal} -> {(isSensitive ? "******" : newVal)}");
+                    formData[key] = newVal;
+                }
+            }
 
             var postUrl = domain + Globals.JavaScriptAjaxUrlRegex.Match(cleanHtml).Groups[1].Value;
-            await DebugLogger.WriteLogAsync($"AJAX请求URL: {postUrl}");
+            DebugLogger.Write($"AJAX请求URL: {postUrl}");
+
             return (postUrl, formData);
         }
 
         internal static async Task<string> GetDownloadLinkAsync(string url, string password = null)
         {
-            await DebugLogger.WriteLogAsync($"开始获取下载链接: {url}, 密码: {password ?? "无"}");
+            DebugLogger.Write($"开始获取下载链接: {url}, 密码: {"******" ?? "无"}");
 
             var uri = new Uri(url);
             var domain = uri.GetLeftPart(UriPartial.Authority);
-            await DebugLogger.WriteLogAsync($"域名: {domain}");
+            DebugLogger.Write($"域名: {domain}");
             await ProcessAcwScV2Challenge(new Uri(domain), url);
 
             var html = await Downloader.DownloadStringAsync(url);
@@ -327,52 +416,52 @@ namespace LinkSimplifier
 
             if (string.IsNullOrEmpty(password))
             {
-                await DebugLogger.WriteLogAsync("无密码，检查iframe");
+                DebugLogger.Write("无密码，检查iframe");
                 var iframeMatch = Globals.IframeSrcRegex.Match(html);
                 if (iframeMatch.Success)
                 {
                     referrer = domain + iframeMatch.Groups[1].Value;
-                    await DebugLogger.WriteLogAsync($"找到iframe，跳转到: {referrer}");
+                    DebugLogger.Write($"找到iframe，跳转到: {referrer}");
                     html = await Downloader.DownloadStringAsync(referrer);
                 }
             }
 
             var cleanHtml = Globals.JavaScriptCommentRegex.Replace(html, "");
 
-            var (postUrl, formData) = await ExtractAjaxDataAsync(cleanHtml, domain, password);
+            var (postUrl, formData) = ExtractAjaxData(cleanHtml, domain, password);
 
             var jsonResponse = await HttpClientWrapper.SendRequestAsync(postUrl, HttpUtils.GetStringFromResponse, HttpMethod.Post, HttpUtils.SetFormContent(formData, referrer));
-            await DebugLogger.WriteLogAsync($"收到JSON响应: {jsonResponse}");
+            DebugLogger.Write($"收到JSON响应: {jsonResponse}");
 
             dynamic response = Json.DeserializeObject(jsonResponse);
             string resultCode = $"{response["zt"]}";
-            await DebugLogger.WriteLogAsync($"状态响应代码: {resultCode}");
+            DebugLogger.Write($"状态响应代码: {resultCode}");
 
             if (resultCode == "1")
             {
                 string downloadUrl = $"{response["dom"]}/file/{response["url"]}";
-                await DebugLogger.WriteLogAsync($"获取下载链接: {downloadUrl}");
+                DebugLogger.Write($"获取下载链接: {downloadUrl}");
 
                 string finalUrl = await HttpUtils.GetLocationFromUrlAsync(downloadUrl);
-                await DebugLogger.WriteLogAsync($"最终下载链接: {finalUrl}");
+                DebugLogger.Write($"最终下载链接: {finalUrl}");
 
                 return finalUrl;
             }
             else
             {
                 string errorMsg = $"错误：{response["inf"]}";
-                await DebugLogger.WriteLogAsync(errorMsg);
+                DebugLogger.Write(errorMsg);
                 return errorMsg;
             }
         }
 
         internal static async Task<string> GetShareLinksFromFolder(string url, string password = null)
         {
-            await DebugLogger.WriteLogAsync($"开始获取文件夹分享链接: {url}, 密码: {password ?? "无"}");
+            DebugLogger.Write($"开始获取文件夹分享链接: {url}, 密码: {"******" ?? "无"}");
 
             var uri = new Uri(url);
             var domain = uri.GetLeftPart(UriPartial.Authority);
-            await DebugLogger.WriteLogAsync($"域名: {domain}");
+            DebugLogger.Write($"域名: {domain}");
             await ProcessAcwScV2Challenge(new Uri(domain), url);
 
             var html = await Downloader.DownloadStringAsync(url);
@@ -380,7 +469,7 @@ namespace LinkSimplifier
             var referrer = url;
             var cleanHtml = Globals.JavaScriptCommentRegex.Replace(html, "");
 
-            var (postUrl, formData) = await ExtractAjaxDataAsync(cleanHtml, domain, password);
+            var (postUrl, formData) = ExtractAjaxData(cleanHtml, domain, password);
 
             bool lastPage = false;
             StringBuilder files = new StringBuilder();
@@ -389,18 +478,18 @@ namespace LinkSimplifier
 
             do
             {
-                await DebugLogger.WriteLogAsync($"开始处理第 {currentPage} 页");
+                DebugLogger.Write($"开始处理第 {currentPage} 页");
 
                 var jsonResponse = await HttpClientWrapper.SendRequestAsync(postUrl, HttpUtils.GetStringFromResponse, HttpMethod.Post, HttpUtils.SetFormContent(formData, referrer));
-                await DebugLogger.WriteLogAsync($"收到第 {currentPage} 页响应，内容: {jsonResponse}");
+                DebugLogger.Write($"收到第 {currentPage} 页响应，内容: {jsonResponse}");
 
                 dynamic response = Json.DeserializeObject(jsonResponse);
                 string resultCode = $"{response["zt"]}";
-                await DebugLogger.WriteLogAsync($"状态响应代码: {resultCode}");
+                DebugLogger.Write($"状态响应代码: {resultCode}");
                 if (resultCode == "1")
                 {
                     int fileCount = ((response["text"] as object[])?.Length) ?? ((response["text"] as List<object>)?.Count ?? 0);
-                    await DebugLogger.WriteLogAsync($"第 {currentPage} 页文件数量: {fileCount}");
+                    DebugLogger.Write($"第 {currentPage} 页文件数量: {fileCount}");
 
                     for (int i = 0; i < fileCount; i++)
                     {
@@ -414,7 +503,7 @@ namespace LinkSimplifier
                         totalFiles++;
                     }
 
-                    await DebugLogger.WriteLogAsync($"已添加 {fileCount} 个文件");
+                    DebugLogger.Write($"已添加 {fileCount} 个文件");
 
                     if ((fileCount > 0 && fileCount < 50) || currentPage >= 2)
                     {
@@ -425,20 +514,20 @@ namespace LinkSimplifier
                     {
                         currentPage++;
                         formData["pg"] = currentPage.ToString();
-                        await DebugLogger.WriteLogAsync($"跳转到下一页: {currentPage}");
+                        DebugLogger.Write($"跳转到下一页: {currentPage}");
                         await Task.Delay(3000);
                     }
                 }
                 else
                 {
                     string errorMsg = $"错误：{response["info"]}";
-                    await DebugLogger.WriteLogAsync(errorMsg);
+                    DebugLogger.Write(errorMsg);
                     return errorMsg;
                 }
 
             } while (!lastPage);
 
-            await DebugLogger.WriteLogAsync($"文件夹获取完成，总共 {totalFiles} 个文件");
+            DebugLogger.Write($"文件夹获取完成，总共 {totalFiles} 个文件");
             return files.ToString();
         }
     }
@@ -477,9 +566,21 @@ namespace LinkSimplifier
 
             try
             {
-                var host = new Uri(url).Host;
-                if (host.Contains("mail.qq")) return await ProcessQQMailUrlAsync(url);
-                if (host.Contains("lanzou")) return await ProcessLanZouUrlAsync(url);
+                var host = new Uri(url).Host.ToLower();
+
+                if (host.Contains("mail.qq"))
+                {
+                    DebugLogger.Write("路由匹配: QQMail");
+                    return await ProcessQQMailUrlAsync(url);
+                }
+
+                if (host.Contains("lanzou"))
+                {
+                    DebugLogger.Write("路由匹配: LanZou");
+                    return await ProcessLanZouUrlAsync(url);
+                }
+
+                DebugLogger.Write("路由匹配: Default (Direct Link)");
                 return url;
             }
             catch (UriFormatException)
@@ -496,6 +597,7 @@ namespace LinkSimplifier
         private static async Task<string> ProcessLanZouUrlAsync(string url)
         {
             var (isFolder, password, baseUrl) = ExtractUrlParameters(url);
+            DebugLogger.Write($"Folder: {isFolder}");
             if (!isFolder)
             {
                 return await Lanzou.GetDownloadLinkAsync(baseUrl, password);

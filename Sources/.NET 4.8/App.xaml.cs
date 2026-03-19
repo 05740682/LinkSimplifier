@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace LinkSimplifier
@@ -7,6 +9,12 @@ namespace LinkSimplifier
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            DebugLogger.Write("=== Start ===");
+
+            DispatcherUnhandledException += (s, a) => { DebugLogger.Write($"[UI] {a.Exception}", 4); a.Handled = true; };
+            TaskScheduler.UnobservedTaskException += (s, a) => { DebugLogger.Write($"[Task] {a.Exception}", 4); a.SetObserved(); };
+            AppDomain.CurrentDomain.UnhandledException += (s, a) => DebugLogger.Write(a.ExceptionObject?.ToString(), 4);
+
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
             base.OnStartup(e);
 
@@ -21,6 +29,7 @@ namespace LinkSimplifier
 
         protected override void OnExit(ExitEventArgs e)
         {
+            DebugLogger.Write("=== End ===");
             HttpClientWrapper.Dispose();
             base.OnExit(e);
         }
