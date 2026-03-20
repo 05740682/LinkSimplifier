@@ -404,7 +404,7 @@ namespace LinkSimplifier
 
         internal static async Task<string> GetDownloadLinkAsync(string url, string password = null)
         {
-            DebugLogger.Write($"开始获取下载链接: {url}, 密码: {"******" ?? "无"}");
+            DebugLogger.Write($"开始获取下载链接: {url}");
 
             var uri = new Uri(url);
             var domain = uri.GetLeftPart(UriPartial.Authority);
@@ -458,7 +458,7 @@ namespace LinkSimplifier
 
         internal static async Task<string> GetShareLinksFromFolder(string url, string password = null)
         {
-            DebugLogger.Write($"开始获取文件夹分享链接: {url}, 密码: {"******" ?? "无"}");
+            DebugLogger.Write($"开始获取文件夹分享链接: {url}");
 
             var uri = new Uri(url);
             var domain = uri.GetLeftPart(UriPartial.Authority);
