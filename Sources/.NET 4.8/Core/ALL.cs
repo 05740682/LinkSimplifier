@@ -19,7 +19,7 @@ namespace LinkSimplifier
 {
     internal static class DebugLogger
     {
-        private static readonly string[] L = { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
+        private static readonly string[] L = { "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL" };
 
         static DebugLogger()
         {
