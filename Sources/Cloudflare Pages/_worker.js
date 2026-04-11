@@ -1,3 +1,78 @@
+export default {
+  async fetch(request, env, ctx) {
+    const urlObj = new URL(request.url);
+    const path = urlObj.pathname.toLowerCase();
+
+    if (path === "/robots.txt") {
+      return new Response("User-agent: *\nDisallow:", {
+        headers: { "Content-Type": "text/plain;charset=UTF-8" }
+      });
+    }
+
+    if (path === "/favicon.ico") {
+  return new Response(
+    Uint8Array.from([
+      0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0xff, 0xff, 0xff,
+      0x00, 0x00, 0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00, 0x00,
+      0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3b
+    ]),
+    { headers: { "Content-Type": "image/gif" } }
+  );
+}
+
+    if (path === "/parse") {
+      if (request.method === "POST") {
+        try {
+          const { url } = await request.json();
+          const inputUrl = url ? url.trim() : "";
+
+          if (!inputUrl || !/^https?:\/\//i.test(inputUrl)) {
+            return new Response(JSON.stringify({ error: "解析失败: 无效的URL地址" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" }
+            });
+          }
+
+          const host = new URL(inputUrl).hostname.toLowerCase();
+          let result = "";
+
+          if (host.includes("mail.qq")) {
+            result = await processQQMail(inputUrl);
+          } else if (host.includes("lanzou")) {
+            result = await processLanZou(inputUrl);
+          } else {
+            result = inputUrl;
+          }
+
+          return new Response(JSON.stringify({ result }), {
+            headers: { "Content-Type": "application/json;charset=UTF-8" }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ error: "解析失败: 解析请求失败" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+      }
+      return new Response("Method Not Allowed", { status: 405 });
+    }
+
+    return new Response(renderHTML(), {
+      headers: { "Content-Type": "text/html;charset=UTF-8" }
+    });
+  }
+};
+
+async function processQQMail(url) {
+  return "QQ邮箱链接: " + url;
+}
+
+async function processLanZou(url) {
+  return "蓝奏云链接: " + url;
+}
+
+function renderHTML() {
+  return `
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -46,6 +121,8 @@
 <svg class="windows-logo" viewBox="0 0 4875 4875"><path fill="#0078d4" d="M0 0h2311v2310H0zm2564 0h2311v2310H2564zM0 2564h2311v2311H0zm2564 0h2311v2311H2564"/></svg>
 <div class="time-display" id="timeDisplay">00:00</div>
 </div>
-<script>const urlInput=document.getElementById('urlInput'),placeholder=document.getElementById('placeholder'),parseBtn=document.getElementById('parseBtn'),clearBtn=document.getElementById('clearBtn'),resultText=document.getElementById('resultText'),windowContainer=document.getElementById('windowContainer'),minimizeBtn=document.getElementById('minimizeBtn'),maximizeBtn=document.getElementById('maximizeBtn'),closeBtn=document.getElementById('closeBtn'),timeDisplay=document.getElementById('timeDisplay'),taskbar=document.getElementById('taskbar'),githubIcon=document.getElementById('githubIcon');let isMaximized=!1,originalPosition={x:0,y:0},originalSize={width:900,height:550},isDragging=!1,dragStartX,dragStartY,containerStartX,containerStartY;function updateTime(){const e=new Date,o=e.getHours().toString().padStart(2,"0"),t=e.getMinutes().toString().padStart(2,"0");timeDisplay.textContent=`${o}:${t}`}function parseLink(){const e=urlInput.value.trim();resultText.value=e||"错误：请输入内容"}function clearAll(){urlInput.value="",resultText.value="",urlInput.focus()}function maximizeWindow(){if(window.innerWidth>920){if(!isMaximized){originalPosition.x=windowContainer.offsetLeft,originalPosition.y=windowContainer.offsetTop,originalSize.width=windowContainer.offsetWidth,originalSize.height=windowContainer.offsetHeight,taskbar.classList.add("hidden"),windowContainer.style.zIndex="3",windowContainer.style.width="100vw",windowContainer.style.height="100vh",windowContainer.style.borderRadius="0",windowContainer.style.border="none",windowContainer.style.boxShadow="none",windowContainer.style.top="0",windowContainer.style.left="0",windowContainer.style.position="fixed",isMaximized=!0}else{taskbar.classList.remove("hidden");const e=originalSize.width,o=originalSize.height,t=(window.innerWidth-e)/2,n=(window.innerHeight-o)/2;windowContainer.style.zIndex="2",windowContainer.style.width=e+"px",windowContainer.style.height=o+"px",windowContainer.style.borderRadius="8px",windowContainer.style.border="1px solid #E1E1E1",windowContainer.style.boxShadow="0 10px 30px rgba(0, 0, 0, 0.15)",windowContainer.style.top=n+"px",windowContainer.style.left=t+"px",windowContainer.style.position="fixed",originalPosition.x=t,originalPosition.y=n,isMaximized=!1}}}function closeWindow(){if(window.innerWidth>920)window.close()}function startDrag(e){if(!isMaximized&&window.innerWidth>920){isDragging=!0,dragStartX=e.clientX,dragStartY=e.clientY;const o=windowContainer.getBoundingClientRect();containerStartX=o.left,containerStartY=o.top,windowContainer.style.position="fixed",windowContainer.style.left=containerStartX+"px",windowContainer.style.top=containerStartY+"px",document.addEventListener("mousemove",doDrag),document.addEventListener("mouseup",stopDrag)}}function doDrag(e){isDragging&&(windowContainer.style.left=containerStartX+(e.clientX-dragStartX)+"px",windowContainer.style.top=containerStartY+(e.clientY-dragStartY)+"px")}function stopDrag(){isDragging&&(isDragging=!1,document.removeEventListener("mousemove",doDrag),document.removeEventListener("mouseup",stopDrag))}function centerWindow(){if(!isMaximized&&window.innerWidth>920){const e=windowContainer.offsetWidth,o=windowContainer.offsetHeight,t=(window.innerWidth-e)/2,n=(window.innerHeight-o)/2;windowContainer.style.position="fixed",windowContainer.style.left=t+"px",windowContainer.style.top=n+"px",originalPosition.x=t,originalPosition.y=n}}window.addEventListener("load",centerWindow),updateTime(),setInterval(updateTime,1e3),parseBtn.addEventListener("click",parseLink),clearBtn.addEventListener("click",clearAll),urlInput.addEventListener("keypress",function(e){"Enter"===e.key&&parseLink()}),urlInput.addEventListener("focus",function(){this.parentElement.style.borderColor="#0078D4"}),urlInput.addEventListener("blur",function(){this.parentElement.style.borderColor="#E8E8E8"}),maximizeBtn.addEventListener("click",maximizeWindow),closeBtn.addEventListener("click",closeWindow),minimizeBtn.addEventListener("click",function(e){e.preventDefault(),!1}),document.querySelector(".title-bar-drag").addEventListener("mousedown",startDrag),githubIcon.addEventListener("click",function(){window.open("https://github.com/05740682/LinkSimplifier","_blank")}),githubIcon.addEventListener("dblclick",function(){window.open("https://github.com/05740682/LinkSimplifier","_blank")});</script>
+<script>const urlInput=document.getElementById('urlInput'),parseBtn=document.getElementById('parseBtn'),clearBtn=document.getElementById('clearBtn'),resultText=document.getElementById('resultText'),windowContainer=document.getElementById('windowContainer'),maximizeBtn=document.getElementById('maximizeBtn'),closeBtn=document.getElementById('closeBtn'),timeDisplay=document.getElementById('timeDisplay'),taskbar=document.getElementById('taskbar'),githubIcon=document.getElementById('githubIcon');let isMaximized=!1,originalPosition={x:0,y:0},originalSize={width:900,height:550},isDragging=!1,dragStartX,dragStartY,containerStartX,containerStartY;function updateTime(){const e=new Date;timeDisplay.textContent=e.getHours().toString().padStart(2,"0")+":"+e.getMinutes().toString().padStart(2,"0")}async function parseLink(){const e=urlInput.value.trim(),l=e.toLowerCase();console.log("正在分析Url...");if(!e||!(l.startsWith("http://")||l.startsWith("https://"))){const err="解析失败: 无效的URL地址";return console.error(err),void(resultText.value=err)}parseBtn.disabled=!0,parseBtn.textContent="...",resultText.value="正在分析Url...";try{const r=await fetch('/parse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:e})}),d=await r.json();if(!r.ok){const err=d.error||"解析失败: 未知错误";console.error(err),resultText.value=err}else{console.log("解析完成"),resultText.value=d.result}}catch(t){const err="解析失败: 网络连接异常";console.error(err),resultText.value=err}finally{parseBtn.disabled=!1,parseBtn.textContent="开始解析"}}function clearAll(){urlInput.value="",resultText.value="",console.log("已清空所有内容"),urlInput.focus()}function maximizeWindow(){if(window.innerWidth>920)if(isMaximized)taskbar.classList.remove("hidden"),Object.assign(windowContainer.style,{width:originalSize.width+"px",height:originalSize.height+"px",borderRadius:"8px",top:originalPosition.y+"px",left:originalPosition.x+"px",zIndex:"2"}),isMaximized=!1;else{originalPosition={x:windowContainer.offsetLeft,y:windowContainer.offsetTop},originalSize={width:windowContainer.offsetWidth,height:windowContainer.offsetHeight},taskbar.classList.add("hidden"),Object.assign(windowContainer.style,{width:"100vw",height:"100vh",borderRadius:"0",top:"0",left:"0",position:"fixed",zIndex:"3"}),isMaximized=!0}}function startDrag(e){if(!isMaximized&&window.innerWidth>920){isDragging=!0,dragStartX=e.clientX,dragStartY=e.clientY;const o=windowContainer.getBoundingClientRect();containerStartX=o.left,containerStartY=o.top,document.addEventListener("mousemove",doDrag),document.addEventListener("mouseup",stopDrag)}}function doDrag(e){isDragging&&(windowContainer.style.left=containerStartX+(e.clientX-dragStartX)+"px",windowContainer.style.top=containerStartY+(e.clientY-dragStartY)+"px")}function stopDrag(){isDragging=!1,document.removeEventListener("mousemove",doDrag),document.removeEventListener("mouseup",stopDrag)}function centerWindow(){if(!isMaximized&&window.innerWidth>920){const x=(window.innerWidth-900)/2,y=(window.innerHeight-550)/2;Object.assign(windowContainer.style,{left:x+"px",top:y+"px",position:"fixed"});originalPosition={x,y}}}window.onload=()=>{centerWindow(),updateTime(),setInterval(updateTime,1e3)},parseBtn.onclick=parseLink,clearBtn.onclick=clearAll,urlInput.onfocus=function(){this.parentElement.style.borderColor="#0078D4"},urlInput.onblur=function(){this.parentElement.style.borderColor="#E8E8E8"},urlInput.onkeypress=e=>{"Enter"===e.key&&parseLink()},maximizeBtn.onclick=maximizeWindow,closeBtn.onclick=()=>window.innerWidth>920&&window.close(),document.querySelector(".title-bar-drag").onmousedown=startDrag,githubIcon.onclick=()=>window.open("https://github.com/05740682/LinkSimplifier","_blank");</script>
 </body>
 </html>
+`;
+}
