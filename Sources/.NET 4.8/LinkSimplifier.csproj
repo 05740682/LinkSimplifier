@@ -58,7 +58,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Core\ALL.cs" />
+    <Compile Include="Common\AppConfig.cs" />
+    <Compile Include="Common\NetworkConfig.cs" />
+    <Compile Include="Common\RuntimeContext.cs" />
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +69,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Services\DebugLogger.cs" />
+    <Compile Include="Services\Providers\Lanzou.cs" />
+    <Compile Include="Services\Network\Downloader.cs" />
+    <Compile Include="Services\Network\HttpClientWrapper.cs" />
+    <Compile Include="Services\Providers\QQMail.cs" />
+    <Compile Include="Services\UrlProcessor.cs" />
+    <Compile Include="Utils\FileSizeUtils.cs" />
+    <Compile Include="Utils\HttpUtils.cs" />
+    <Compile Include="Utils\Json.cs" />
+    <Compile Include="Utils\RegexPatterns.cs" />
     <Compile Include="ViewModels\ViewModels.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

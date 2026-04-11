@@ -1,4 +1,8 @@
-﻿using System;
+﻿using LinkSimplifier.Common;
+using LinkSimplifier.Services;
+using LinkSimplifier.Services.Network;
+using LinkSimplifier.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -85,7 +89,7 @@ namespace LinkSimplifier
                 return;
             }
 
-            if (!Globals.HttpProtocolRegex.IsMatch(ResultText))
+            if (!RegexPatterns.HttpProtocolRegex.IsMatch(ResultText))
             {
                 string warn = "解析结果不是有效的下载地址";
                 DebugLogger.Write(warn, 2);
@@ -106,7 +110,7 @@ namespace LinkSimplifier
                     TotalSize = p.TotalBytes.HasValue ? FileSizeUtils.FormatBytes(p.TotalBytes.Value) : "未知";
                 });
 
-                string tempDir = Globals.Paths[1];
+                string tempDir = AppConfig.BaseDirectory;
                 if (await Downloader.DownloadFileAsync(ResultText, tempDir, progress, _cts.Token))
                 {
                     string info = "下载完成！";
