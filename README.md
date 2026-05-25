@@ -5,7 +5,7 @@
 ## 🚀 项目特点
 
 - **多端覆盖**：提供基于 C# WPF 的桌面客户端及基于 Cloudflare Pages 的 Web 版本。
-- **无需安装**：通过 Web 版 [demo.bbroot.com](https://demo.bbroot.com) 即可在手机或电脑端即开即用。
+- **无需安装**：通过 Web 版 [linksimplifier.test0001.bond](https://linksimplifier.test0001.bond) 即可在手机或电脑端即开即用。
 - **一键直链**：跳过广告与中转页面，直接获取文件下载地址。
 - **支持加密**：完美兼容带提取码的分享链接。
 - **开源自由**：支持通过 Cloudflare Workers 自行部署专属解析接口。
@@ -14,7 +14,7 @@
 
 ## 🌐 在线体验与部署
 
-- **在线解析**：[demo.bbroot.com](https://demo.bbroot.com)
+- **在线解析**：[linksimplifier.test0001.bond](https://linksimplifier.test0001.bond)
 - **自部署脚本**：[`_worker.js`](https://github.com/05740682/LinkSimplifier/raw/refs/heads/master/Sources/Cloudflare%20Pages/_worker.js)
   > 您可以将此脚本部署到自己的 Cloudflare Workers 中，实现私有化解析服务。
 
