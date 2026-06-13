@@ -54,30 +54,36 @@ namespace LinkSimplifier.Services
         private static (string PostUrl, Dictionary<string, string> FormData) ExtractAjaxData(string cleanHtml, string domain, string password = null)
         {
             var vars = new Dictionary<string, string>();
-            RegexPatterns.JavaScriptVarRegex.Matches(cleanHtml).Cast<Match>().ToList().ForEach(m => vars[m.Groups[1].Value] = m.Groups[2].Success ? m.Groups[2].Value.Trim().Trim('\'') : "");
-            RegexPatterns.JavaScriptAssignRegex.Matches(cleanHtml).Cast<Match>().Where(m => vars.ContainsKey(m.Groups[1].Value)).ToList().ForEach(m => vars[m.Groups[1].Value] = m.Groups[2].Value.Trim().Trim('\''));
-            vars["pwd"] = password ?? "";
-
+            foreach (Match m in RegexPatterns.JavaScriptVarRegex.Matches(cleanHtml))
+            {
+                if (!vars.ContainsKey(m.Groups[1].Value))
+                    vars[m.Groups[1].Value] = m.Groups[2].Value.Trim('\'', '"');
+            }
             DebugLogger.Write($"提取到变量: {vars.Count} 个");
 
             var ajaxMatch = RegexPatterns.JavaScriptAjaxDataRegex.Match(cleanHtml);
             var ajaxData = Regex.Replace(ajaxMatch.Groups[1].Value, @"\s+", " ").Trim();
             DebugLogger.Write($"原始AJAX数据: {ajaxData}");
 
-            var formData = ajaxData.Split(',')
-                .Select(p => p.Split(':'))
-                .Where(parts => parts.Length == 2)
-                .ToDictionary(parts => parts[0].Trim().Trim('\'', '"'), parts => parts[1].Trim().Trim('\'', '"'));
-
-            foreach (var key in formData.Keys.ToList())
+            var formData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (Match m in RegexPatterns.JavaScriptAjaxDataKeyValueRegex.Matches(ajaxData))
             {
-                string oldVal = formData[key];
-                if (vars.TryGetValue(oldVal, out var newVal))
+                string key = m.Groups[1].Value;
+                string val = m.Groups[3].Value + m.Groups[4].Value + m.Groups[5].Value;
+
+                if (key.Equals("pwd", StringComparison.OrdinalIgnoreCase) || key.Equals("p", StringComparison.OrdinalIgnoreCase))
                 {
-                    bool isSensitive = string.Equals(oldVal, "pwd", StringComparison.OrdinalIgnoreCase);
-                    DebugLogger.Write($"{key}: 替换 {oldVal} -> {(isSensitive ? "******" : newVal)}");
-                    formData[key] = newVal;
+                    DebugLogger.Write(key + ": 替换 pwd -> ******");
+                    formData[key] = password ?? "";
+                    continue;
                 }
+
+                if (vars.ContainsKey(val))
+                {
+                    formData[key] = vars[val];
+                    DebugLogger.Write($"{key}: 替换 {val} -> {vars[val]}");
+                }
+                else { formData[key] = val; }
             }
 
             var postUrl = domain + RegexPatterns.JavaScriptAjaxUrlRegex.Match(cleanHtml).Groups[1].Value;
@@ -158,7 +164,7 @@ namespace LinkSimplifier.Services
 
             bool lastPage = false;
             StringBuilder files = new StringBuilder();
-            int currentPage = int.Parse(formData["pg"]);
+            int currentPage = int.Parse(formData["pg"] = "1");
             int totalFiles = 0;
 
             do
@@ -197,8 +203,7 @@ namespace LinkSimplifier.Services
                     }
                     else
                     {
-                        currentPage++;
-                        formData["pg"] = currentPage.ToString();
+                        formData["pg"] = (++currentPage).ToString();
                         DebugLogger.Write($"跳转到下一页: {currentPage}");
                         await Task.Delay(3000);
                     }

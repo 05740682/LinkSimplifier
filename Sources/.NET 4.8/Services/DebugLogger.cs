@@ -92,6 +92,9 @@ namespace LinkSimplifier.Services
             string prefix = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}][{L[idx]}] ";
             string formattedMsg = msg.Replace("\n", "\n" + prefix);
             Trace.WriteLine(prefix + formattedMsg);
+            #if DEBUG
+            Console.WriteLine(prefix + formattedMsg);
+            #endif
         }
     }
 
