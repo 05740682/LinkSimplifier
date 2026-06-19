@@ -259,12 +259,13 @@ const Lanzou = {
             "Accept": NetworkConfig.DefaultAccept,
             "Accept-Language": NetworkConfig.DefaultAcceptLanguage,
             "User-Agent": NetworkConfig.DefaultUserAgent,
-            "Referer": NetworkConfig.Referer,
             "Cookie": NetworkConfig.Cookie
           }
         });
 
         html = await iframeRes.text();
+      } else {
+        return "解析失败：找不到 iframe , 请稍后重试";
       }
     }
 
