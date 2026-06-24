@@ -364,7 +364,6 @@ FodyWeavers.xsd
 Sources/Cloudflare Pages/.wrangler/state/v3/cache/miniflare-CacheObject/metadata.sqlite-wal
 Sources/Cloudflare Pages/.env
 Sources/Cloudflare Pages/本地预览.ps1
-Sources/Cloudflare Pages/查询账号信息.ps1
 Sources/Cloudflare Pages/deploy.ps1
 Sources/Cloudflare Pages/package.json
 Sources/Cloudflare Pages/pnpm-lock.yaml
