@@ -1,20 +1,17 @@
 # LinkSimplifier
 
-一款轻量、高效的云盘直链解析工具，支持桌面端与Web端。
+一款轻量、高效的云盘直链解析工具，提供基于 C# WPF 的桌面客户端及基于 Cloudflare Workers & Pages 的 Web 版本。
 
 ## 项目特点
 
-- **多端覆盖**：提供基于 C# WPF 的桌面客户端及基于 Cloudflare Workers & Pages 的 Web 版本。
-- **支持加密**：兼容带提取码的分享链接。
-
----
+- **快速直链获取**：一键解析获取可直接下载的直链地址
+- **加密链接支持**：支持带密码的分享链接解析
+- **文件夹解析**：支持解析文件夹
 
 ## 在线体验与部署
 
 - **在线解析**：[linksimplifier.test0001.bond](https://linksimplifier.test0001.bond)
 - **自部署脚本**：[`_worker.js`](https://github.com/05740682/LinkSimplifier/raw/refs/heads/master/Sources/Cloudflare%20Pages/src/_worker.js)
-
----
 
 ## 支持平台
 
@@ -22,8 +19,6 @@
 | :--- | :--- | :--- |
 | **QQ 邮箱中转站** | 单文件 | [mail.qq.com](https://mail.qq.com) |
 | **蓝奏云** | 单文件 / 文件夹 | [lanzou.com](https://www.lanzou.com) |
-
----
 
 ## 使用指南
 
@@ -39,8 +34,6 @@
 | **带密码文件** | `https://xxx.com/xxxx&pwd=1234` | 追加 `&pwd=密码` |
 | **普通文件夹** | `https://xxx.com/xxxx&folder` | 追加 `&folder`  |
 | **加密文件夹** | `https://xxx.com/xxxx&pwd=1234&folder` | 同时追加密码与文件夹参数 |
-
----
 
 ## 免责声明
 
