@@ -1,3 +1,8 @@
-name = "33spj14b50tnwclctq7z"
-compatibility_date = "2026-02-01"
-pages_build_output_dir = "./src"
+name = "linksimplifier"
+compatibility_date = "2026-10-01"
+main = "./src/_worker.js"
+workers_dev = false
+preview_urls = false
+[assets]
+directory="./src"
+binding="src"
