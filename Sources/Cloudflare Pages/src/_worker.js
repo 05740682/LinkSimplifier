@@ -116,7 +116,7 @@ const QQMail = {
       if (key && code) {
         const directUrl = `https://wx.mail.qq.com/ftn/download?func=4&key=${key}&code=${code}`;
 
-        return await getFinalData(directUrl);
+        return decodeURIComponent(await getFinalData(directUrl));
       }
 
       const timestamp = `${Math.floor(Math.random() * 1e13)}${Date.now()}`;
@@ -136,7 +136,7 @@ const QQMail = {
 
       const data = await apiRes.json();
 
-      return await getFinalData(data.body.url);
+      return decodeURIComponent(await getFinalData(data.body.url));
 
     } catch (e) {
       return `解析失败: ${e.message}`;
