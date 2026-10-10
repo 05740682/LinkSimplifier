@@ -2,7 +2,6 @@
 using LinkSimplifier.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -35,20 +34,22 @@ namespace LinkSimplifier.Services
             return sb.ToString().ToLower();
         }
 
-        private static async Task ProcessAcwScV2Challenge(Uri domain, string url)
+        private static async Task<string> ProcessAcwScV2Challenge(string url)
         {
             DebugLogger.Write($"开始处理acw_sc__v2挑战");
 
+            var uri = new Uri(url);
+            var domain = new Uri(uri.GetLeftPart(UriPartial.Authority));
             var html = await Downloader.DownloadStringAsync(url);
 
             var _m = RegexPatterns.AcwScV2ArgRegex.Match(html);
             if (_m.Success)
             {
-                DebugLogger.Write($"找到acw_sc__v2参数: {_m.Groups[1].Value}");
                 var cookieValue = CalculateAcwScV2(_m.Groups[1].Value);
-                DebugLogger.Write($"计算得到cookie值: {cookieValue}");
                 HttpClientWrapper.CookieContainer.Add(domain, new Cookie("acw_sc__v2", cookieValue));
+                html = await Downloader.DownloadStringAsync(url);
             }
+            return html;
         }
 
         private static (string PostUrl, Dictionary<string, string> FormData) ExtractAjaxData(string cleanHtml, string domain, string password = null)
@@ -86,7 +87,13 @@ namespace LinkSimplifier.Services
                 else { formData[key] = val; }
             }
 
-            var postUrl = domain + RegexPatterns.JavaScriptAjaxUrlRegex.Match(cleanHtml).Groups[1].Value;
+            string postUrl = null;
+            var match = RegexPatterns.JavaScriptAjaxUrlRegex.Match(cleanHtml);
+            if (match.Success)
+            {
+                var val = match.Value;
+                postUrl = RegexPatterns.HttpProtocolRegex.IsMatch(val) ? val : domain + val;
+            }
             DebugLogger.Write($"AJAX请求URL: {postUrl}");
 
             return (postUrl, formData);
@@ -99,9 +106,8 @@ namespace LinkSimplifier.Services
             var uri = new Uri(url);
             var domain = uri.GetLeftPart(UriPartial.Authority);
             DebugLogger.Write($"域名: {domain}");
-            await ProcessAcwScV2Challenge(new Uri(domain), url);
 
-            var html = await Downloader.DownloadStringAsync(url);
+            var html = await ProcessAcwScV2Challenge(url);
 
             var referrer = url;
 
@@ -113,7 +119,7 @@ namespace LinkSimplifier.Services
                 {
                     referrer = domain + iframeMatch.Groups[1].Value;
                     DebugLogger.Write($"找到iframe，跳转到: {referrer}");
-                    html = await Downloader.DownloadStringAsync(referrer);
+                    html = await ProcessAcwScV2Challenge(referrer);
                 }
             }
 
@@ -134,6 +140,11 @@ namespace LinkSimplifier.Services
                 DebugLogger.Write($"获取下载链接: {downloadUrl}");
 
                 string finalUrl = await HttpUtils.GetLocationFromUrlAsync(downloadUrl);
+                if (string.IsNullOrEmpty(finalUrl))
+                {
+                    await ProcessAcwScV2Challenge(downloadUrl);
+                    finalUrl = await HttpUtils.GetLocationFromUrlAsync(downloadUrl);
+                }
                 DebugLogger.Write($"最终下载链接: {finalUrl}");
 
                 return finalUrl;
@@ -153,9 +164,8 @@ namespace LinkSimplifier.Services
             var uri = new Uri(url);
             var domain = uri.GetLeftPart(UriPartial.Authority);
             DebugLogger.Write($"域名: {domain}");
-            await ProcessAcwScV2Challenge(new Uri(domain), url);
 
-            var html = await Downloader.DownloadStringAsync(url);
+            var html = await ProcessAcwScV2Challenge(url);
 
             var referrer = url;
             var cleanHtml = RegexPatterns.JavaScriptCommentRegex.Replace(html, "");

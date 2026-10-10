@@ -12,7 +12,6 @@ namespace LinkSimplifier.Utils
     {
         internal static Func<HttpResponseMessage, Task<string>> GetStringFromResponse = async response =>
         {
-            response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         };
 
