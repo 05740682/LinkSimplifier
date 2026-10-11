@@ -12,7 +12,38 @@
 ## 在线体验与部署
 
 - **在线解析**：[linksimplifier.test0001.bond](https://linksimplifier.test0001.bond)
-- **自部署脚本**：[`_worker.js`](https://github.com/05740682/LinkSimplifier/raw/refs/heads/master/Sources/Cloudflare%20Pages/src/_worker.js)
+
+1. **环境要求**
+   - Node.js
+   - Cloudflare 账号
+   - 已创建好具备 Workers 部署权限的 API Token
+
+2. **安装 pnpm 和 Wrangler**
+   ```bash
+   npm install -g pnpm@latest-10
+   pnpm add -g wrangler@latest
+   ```
+
+3. **下载并解压项目**
+   - 下载地址：[LinkSimplifier-master.zip](https://github.com/05740682/LinkSimplifier/archive/refs/heads/master.zip)
+   - 解压后进入目录：
+   ```bash
+   cd "LinkSimplifier-master/Sources/Cloudflare Pages"
+   ```
+
+4. **配置环境变量**
+   在当前目录下创建 `.env` 文件：
+   ```env
+   CLOUDFLARE_API_TOKEN=你的_API_Token
+   CLOUDFLARE_ACCOUNT_ID=你的_Account_ID
+   ```
+
+   > 注意：`.env` 含敏感信息，请勿提交到 Git 仓库，建议加入 `.gitignore`。
+
+5. **部署到 Cloudflare**
+   ```bash
+   wrangler deploy
+   ```
 
 ## 支持平台
 
