@@ -1,8 +1,10 @@
 name = "linksimplifier"
-compatibility_date = "2026-10-01"
+compatibility_date = "2026-10-14"
 main = "./src/_worker.js"
 workers_dev = false
 preview_urls = false
+[placement]
+region = "gcp:asia-east2"
 [assets]
 directory="./src"
 binding="src"
